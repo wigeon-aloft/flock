@@ -1,0 +1,11 @@
+{
+    "help": {
+        "response": "This is the help command."
+    },
+    "add": {
+        "response": "Added {} to {} queue."
+    },
+    "create": {
+        "response": "Created queue for {}."
+    }
+}
