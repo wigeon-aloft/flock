@@ -1,11 +1,14 @@
 {
     "help": {
-        "response": "This is the help command."
+        "response": "This is the help command.",
+        "description": ""
     },
     "add": {
-        "response": "Added {} to {} queue."
+        "response": "Added {} to {} queue.",
+        "description": "Add a user to an existing queue."
     },
     "create": {
-        "response": "Created queue for {}."
+        "response": "Created queue `{}`.",
+        "description": "Creates a new queue."
     }
 }

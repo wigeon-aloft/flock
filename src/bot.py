@@ -2,9 +2,10 @@
 
 import os
 from dotenv import load_dotenv
-import flockutil
+import flockutil as fu
 import discord
 import json
+import logging
 
 
 class FlockClient(discord.Client):
@@ -14,7 +15,7 @@ class FlockClient(discord.Client):
         self._guilds = []
         self._uid = ""
         self._trigger_phrase = "!q"
-        self._queue_manager = flockutil.QueueManager()
+        self._queue_manager = fu.QueueManager()
         
         # Load commands from file
         with open("./data/command.json", 'r') as command_file:
@@ -41,35 +42,65 @@ class FlockClient(discord.Client):
         if len(trigger_phrase) <= 3 and isinstance(trigger_phrase, str):
             self._trigger_phrase = trigger_phrase
 
-
-
     async def on_message(self, message):
         """Parses Discord message checking for Bot trigger phrase."""
 
-        print(f"parsing message {message.id}")
-
         # Break if message sender is Flock
-        if message.author == client.user:
+        author = message.author
+        if author == client.user:
             return
 
-        # Check message content for trigger phrase
+        # Check message content for trigger phrase and parse command and arguments if present
         if self._trigger_phrase in message.content:
-            print("trigger phrase found")
-            command = message.content[message.content.index(self._trigger_phrase):].split(' ')[1]
+            command = ""
+            args = []
+
+            command_msg_split = message.content[message.content.index(
+                self._trigger_phrase):].split(' ')
+
+            # Extract command and arguments (if any)
+            if len(command_msg_split[1:]) > 1:
+                command, args = command_msg_split[1], command_msg_split[2:]
+            else:
+                command = command_msg_split[1]
+            
+            print("Received comand '{}' with args {}.".format(command, args))
         else:
             return 
 
-        print("guess we're sending a message")
-
-        # Check if the command exists
+        # Run code based on the command
         if command in self._commands.keys():
-            await message.channel.send(self._commands[command]['response'])
+            if command == "create":
+
+                # Get the user-specified queue name, if provided
+                name = ""
+                if len(args) > 0:
+                    name = args[0]
+                
+                # Create the queue
+                q = self._queue_manager.create_queue(author=author, name=name)
+                await message.channel.send(self._commands['create']['response'].format(q.get_name()))
+
+            if command == "add":
+                q = self._queue_manager.find_queue_by_name(args[0])
+                q.add_member(author.id)
+                # await message.channel.send(self._commands['add']['response'].format(self.mention(author), q.get_name()))
+                await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
+
         else:
-            await message.channel.send("`{}` not recognised. Available commands are:\n- {}".format(command, '\n- '.join(self._commands.keys())))
+            # Send message indicating that the command was not recognised with a list of available commands
+            await message.channel.send("`{}` not recognised. Available commands are:\n- {}".format(
+                command, '\n- '.join(self._commands.keys())))
 
-
+    @staticmethod
+    def mention(author):
+        """Returns a formatted mention string for a given user."""
+        return '<@{}>'.format(author.id)
+        
 
 if __name__ == "__main__":
+    # Enable Discord API logging
+    logging.basicConfig(level=logging.INFO)
 
     # Load environment variables and load API token
     load_dotenv()
