@@ -65,14 +65,14 @@ class FlockClient(discord.Client):
             else:
                 command = command_msg_split[1]
             
-            print("Received comand '{}' with args {}.".format(command, args))
+            print("Received command '{}' with args {}.".format(command, args))
         else:
             return 
 
         # Run code based on the command
         if command in self._commands.keys():
-            if command in ["create", "c"]:
 
+            if command in ["create", "c"]:
                 # Get the user-specified queue name, if provided
                 name = ""
                 if len(args) > 0:
@@ -83,15 +83,20 @@ class FlockClient(discord.Client):
                 await message.channel.send(self._commands['create']['response'].format(q.get_name()))
 
             if command in ["join", "j", "add", "a"]:
+                # Add a user to the specified queue
                 q = self._queue_manager.find_queue_by_name(args[0])
                 q.add_member(author.id)
 
                 # Reply to user indicating that they have been added.
                 await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
+            
+            if command in ["show", "s"]:
+                user_queues = self._queue_manager.get_user_queues(author)
+                await message.channel.send(self._commands['show']['response'].format(author.mention, ', '.join([queue.get_name() for queue in user_queues])))
 
         else:
             # Send message indicating that the command was not recognised with a list of available commands
-            await message.channel.send("`{}` not recognised. Available commands are:\n- {}".format(
+            await message.channel.send("`{}` not recognised. Use `help` for a list of available commands".format(
                 command, '\n- '.join(self._commands.keys())))
 
 

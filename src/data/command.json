@@ -8,7 +8,11 @@
         "description": "Add a user to an existing queue."
     },
     "create": {
-        "response": "Created queue `{}`.",
+        "response": "Created queue {}.",
         "description": "Creates a new queue."
+    },
+    "show": {
+        "response": "{} you are in {}.",
+        "description": "Lists the queues the user is current in."
     }
 }

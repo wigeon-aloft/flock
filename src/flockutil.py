@@ -59,6 +59,15 @@ class QueueManager:
                     return True
         return False
 
+    def get_user_queues(self, user):
+        """Returns a list of queues that a user is currently in."""
+        user_queues = []
+        for queue in self._queues:
+            if user.id in queue.get_members():
+                user_queues.append(queue)
+        return user_queues
+
+
 
 class Queue:
     """
