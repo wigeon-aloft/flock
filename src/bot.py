@@ -36,6 +36,7 @@ class FlockClient(discord.Client):
         for guild in client.guilds:
             self._guilds.append(guild.id)
             print(f'\t{guild.name} {guild.id}')
+        print("Ready to go!")
 
     def set_trigger_char(self, trigger_phrase):
         """Set the phrase that will trigger the bot from a discord message."""
@@ -70,7 +71,7 @@ class FlockClient(discord.Client):
 
         # Run code based on the command
         if command in self._commands.keys():
-            if command == "create":
+            if command in ["create", "c"]:
 
                 # Get the user-specified queue name, if provided
                 name = ""
@@ -81,10 +82,11 @@ class FlockClient(discord.Client):
                 q = self._queue_manager.create_queue(author=author, name=name)
                 await message.channel.send(self._commands['create']['response'].format(q.get_name()))
 
-            if command == "add":
+            if command in ["join", "j", "add", "a"]:
                 q = self._queue_manager.find_queue_by_name(args[0])
                 q.add_member(author.id)
-                # await message.channel.send(self._commands['add']['response'].format(self.mention(author), q.get_name()))
+
+                # Reply to user indicating that they have been added.
                 await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
 
         else:
@@ -92,11 +94,6 @@ class FlockClient(discord.Client):
             await message.channel.send("`{}` not recognised. Available commands are:\n- {}".format(
                 command, '\n- '.join(self._commands.keys())))
 
-    @staticmethod
-    def mention(author):
-        """Returns a formatted mention string for a given user."""
-        return '<@{}>'.format(author.id)
-        
 
 if __name__ == "__main__":
     # Enable Discord API logging
