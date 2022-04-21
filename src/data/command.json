@@ -14,5 +14,9 @@
     "show": {
         "response": "{} you are in {}.",
         "description": "Lists the queues the user is current in."
+    },
+    "leave": {
+        "response": "{} removed from {}",
+        "description": "Removes a user from a queue."
     }
 }

@@ -91,12 +91,20 @@ class FlockClient(discord.Client):
                 await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
             
             if command in ["show", "s"]:
+                # Show the queues a user is currently in
                 user_queues = self._queue_manager.get_user_queues(author)
                 await message.channel.send(self._commands['show']['response'].format(author.mention, ', '.join([queue.get_name() for queue in user_queues])))
 
+            if command in ["leave", "l"]:
+                # Removes a user from a specified queue
+                q_name = args[0]
+                q = self._queue_manager.find_queue_by_name(q_name)
+                q.remove_member(author.id)
+                await message.channel.send(self._commands['leave']['response'].format(author.mention, q_name))
+
         else:
             # Send message indicating that the command was not recognised with a list of available commands
-            await message.channel.send("`{}` not recognised. Use `help` for a list of available commands".format(
+            await message.channel.send("`{}` not recognised. Use `help` for a list of available commands.".format(
                 command, '\n- '.join(self._commands.keys())))
 
 
