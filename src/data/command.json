@@ -18,5 +18,9 @@
     "leave": {
         "response": "{} removed from {}",
         "description": "Removes a user from a queue."
+    },
+    "status": {
+        "response": "Current members of the {} queue:\n{}",
+        "description": "Shows the current members of a queue."
     }
 }

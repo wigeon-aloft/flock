@@ -8,6 +8,11 @@ import json
 import logging
 
 
+def mention(user_id):
+    """Generate a mention string for a given user ID."""
+    return '<@{}>'.format(user_id)
+
+
 class FlockClient(discord.Client):
     """Client for Discord API event handling."""
 
@@ -102,9 +107,15 @@ class FlockClient(discord.Client):
                 q.remove_member(author.id)
                 await message.channel.send(self._commands['leave']['response'].format(author.mention, q_name))
 
+            if command in ["status", "st"]:
+                q_name = args[0]
+                q = self._queue_manager.find_queue_by_name(q_name)
+                members = q.get_members()
+                await message.channel.send(self._commands['status']['response'].format(q_name, '\n'.join([mention(member) for member in members])))
+
         else:
             # Send message indicating that the command was not recognised with a list of available commands
-            await message.channel.send("`{}` not recognised. Use `help` for a list of available commands.".format(
+            await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
                 command, '\n- '.join(self._commands.keys())))
 
 
