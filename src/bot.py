@@ -90,10 +90,15 @@ class FlockClient(discord.Client):
             if command in ["join", "j", "add", "a"]:
                 # Add a user to the specified queue
                 q = self._queue_manager.find_queue_by_name(args[0])
-                q.add_member(author.id)
 
-                # Reply to user indicating that they have been added.
-                await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
+                try:
+                    q.add_member(author.id)
+
+                    # Reply to user indicating that they have been added.
+                    await message.channel.send(self._commands['add']['response'].format(author.mention, q.get_name()))
+                except ValueError as ve:
+                    # Send error message
+                    await message.channel.send(str(ve).format(author.mention))
             
             if command in ["show", "s"]:
                 # Show the queues a user is currently in

@@ -108,7 +108,10 @@ class Queue:
         self._lastmodified = dt.datetime.now()
 
     def add_member(self, member_id):
-        self._members.append(member_id)
+        if member_id not in self._members:
+            self._members.append(member_id)
+        else:
+            raise ValueError("{} is already in queue.")
 
     def remove_member(self, member_id):
         self._members.remove(member_id)
