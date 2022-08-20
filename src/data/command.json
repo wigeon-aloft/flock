@@ -22,5 +22,9 @@
     "status": {
         "response": "Current members of the {} queue:\n{}",
         "description": "Shows the current members of a queue."
+    },
+    "delete": {
+        "response": "Deleted {} queue.",
+        "description": "Deletes an existing queue."
     }
 }

@@ -1,7 +1,7 @@
-import datetime as dt
 from tokenize import String
 import random
 import string
+import datetime as dt
 
 class QueueManager:
     """Manages a group of Queue objects."""
@@ -27,6 +27,18 @@ class QueueManager:
 
     def get_queues(self):
         return self._queues
+
+    def delete_queue(self, queue_name):
+        """Removes an existing queue from the queue list. Takes the name of a queue as a string."""
+        queue_removed = None
+
+        # Check if the queue exists
+        queue = self.find_queue_by_name(queue_name)
+
+        if queue:
+            self._queues.remove(queue)
+        
+        return queue_removed
 
     def find_queue_by_id(self, qid=""):
         """Returns queue that matches the given ID."""

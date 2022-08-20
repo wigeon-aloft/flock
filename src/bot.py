@@ -113,6 +113,12 @@ class FlockClient(discord.Client):
                 members = q.get_members()
                 await message.channel.send(self._commands['status']['response'].format(q_name, '\n'.join([mention(member) for member in members])))
 
+            if command in ["delete", "del", "d"]:
+                q_name = args[0]
+                q = self._queue_manager.delete_queue(q_name)
+                # TODO check if returned queue was None or not. Send response message based on that
+                await message.channel.send(self._commands['delete']['response'].format(q_name))
+
         else:
             # Send message indicating that the command was not recognised with a list of available commands
             await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
