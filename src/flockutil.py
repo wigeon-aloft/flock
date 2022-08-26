@@ -80,7 +80,6 @@ class QueueManager:
         return user_queues
 
 
-
 class Queue:
     """
     Stores information pertaining to an activity queue.
