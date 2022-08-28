@@ -114,6 +114,17 @@ class FlockClient(discord.Client):
         if len(trigger_phrase) <= 3 and isinstance(trigger_phrase, str):
             self._trigger_phrase = trigger_phrase
 
+    def get_command_from_trigger(self, user_command):
+        """Returns a command reference from self._commands for a given user input trigger."""
+
+        # Check if the trigger is associated with a command
+        for command in self._commands:
+            if user_command in self._commands.get(command).get("trigger"):
+                return self._commands.get(command).get("method")
+            
+        # Raise an exception if the trigger could not be found
+        raise KeyError(f"Command '{user_command}' does not exist.")
+
     async def on_message(self, message):
         """Parses Discord message checking for Bot trigger phrase."""
 
@@ -140,19 +151,28 @@ class FlockClient(discord.Client):
         else:
             return 
 
-        # Find and run the relevant command
-        command_found = False
-        for command in self._commands:
-            
-            # Check if the trigger is valid
-            if user_command in self._commands.get(command).get("trigger"):
-                command_found = True
-                await self._commands[command]["method"](message, args)
-        
-        if not command_found:
-            # Send message indicating that the command was not recognised with a list of available commands
+        # Run the command associated with user_command
+        try:
+            await self.get_command_from_trigger(user_command)(message, args)
+        except KeyError as ke:
+            print(ke)
             await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
                 user_command, '\n- '.join(self._commands.keys())))
+
+
+
+        # command_found = False
+        # for command in self._commands:
+            
+        #     # Check if the trigger is valid
+        #     if user_command in self._commands.get(command).get("trigger"):
+        #         command_found = True
+        #         await self._commands[command]["method"](message, args)
+        
+        # if not command_found:
+        #     # Send message indicating that the command was not recognised with a list of available commands
+        #     await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
+        #         user_command, '\n- '.join(self._commands.keys())))
             
     async def create(self, message, args):
         # Get the user-specified queue name, if provided
