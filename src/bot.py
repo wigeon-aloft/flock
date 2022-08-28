@@ -158,21 +158,6 @@ class FlockClient(discord.Client):
             print(ke)
             await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
                 user_command, '\n- '.join(self._commands.keys())))
-
-
-
-        # command_found = False
-        # for command in self._commands:
-            
-        #     # Check if the trigger is valid
-        #     if user_command in self._commands.get(command).get("trigger"):
-        #         command_found = True
-        #         await self._commands[command]["method"](message, args)
-        
-        # if not command_found:
-        #     # Send message indicating that the command was not recognised with a list of available commands
-        #     await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
-        #         user_command, '\n- '.join(self._commands.keys())))
             
     async def create(self, message, args):
         # Get the user-specified queue name, if provided
