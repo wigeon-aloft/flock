@@ -257,7 +257,11 @@ class FlockClient(discord.Client):
     async def show(self, message, args):
         # Show the queues a user is currently in
         user_queues = self._queue_manager.get_user_queues(message.author)
-        await message.channel.send(self._commands['show']['response'].format(message.author.mention, ', '.join([queue.get_name() for queue in user_queues])))
+
+        if len(user_queues) == 0:
+            await message.channel.send(f"{message.author.mention} you are not currently in any queues.")
+        else:
+            await message.channel.send(self._commands['show']['response'].format(message.author.mention, ', '.join([queue.get_name() for queue in user_queues])))
 
     async def leave(self, message, args):
         # Removes a user from a specified queue
