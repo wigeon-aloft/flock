@@ -179,7 +179,9 @@ class FlockClient(discord.Client):
                 self._trigger_phrase):].split(' ')
 
             # Extract command and arguments (if any)
-            if len(command_msg_split[1:]) > 1:
+            if len(command_msg_split) == 1:
+                user_command = None
+            elif len(command_msg_split[1:]) > 1:
                 user_command, args = command_msg_split[1], command_msg_split[2:]
             else:
                 user_command = command_msg_split[1]
@@ -189,12 +191,16 @@ class FlockClient(discord.Client):
             return 
 
         # Run the command associated with user_command
-        try:
-            await self.get_command_from_trigger(user_command).get("method")(message, args)
-        except KeyError as ke:
-            print(ke)
-            await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
-                user_command, '\n- '.join(self._commands.keys())))
+        if user_command:
+            try:
+                await self.get_command_from_trigger(user_command).get("method")(message, args)
+            except KeyError as ke:
+                print(ke)
+                await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
+                    user_command, '\n- '.join(self._commands.keys())))
+        else:
+            # Sender provided "!q" without command, so try to add them to the most recent queue
+            await self.add(message, [self._queue_manager.get_most_recent_queue().get_name()])
             
     async def help(self, message, args):
         """Prints help information for the given command or shows a list of commands if command not provided."""
@@ -241,7 +247,10 @@ class FlockClient(discord.Client):
 
     async def add(self, message, args):
             # Add a user to the specified queue
-            q = self._queue_manager.find_queue_by_name(args[0])
+            if len(args) != 0:
+                q = self._queue_manager.find_queue_by_name(args[0])
+            else:
+                q = self._queue_manager.get_most_recent_queue()
 
             try:
                 # Add user to the queue

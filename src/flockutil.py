@@ -89,6 +89,14 @@ class QueueManager:
                 user_queues.append(queue)
         return user_queues
 
+    def get_most_recent_queue(self):
+        """Returns the queue that was created most recently."""
+
+        if len(self._queues) == 1:
+            return self._queues[0]
+        else:
+            return self._queues.sort(key=lambda x: x.get_createdtime())[0]
+
 
 class Queue:
     """
@@ -115,6 +123,9 @@ class Queue:
 
     def _update_lastmodified(self):
         self._lastmodified = dt.datetime.now()
+
+    def get_createdtime(self):
+        return self._createdtime
 
     def add_member(self, member_id):
         if member_id not in self._members:
