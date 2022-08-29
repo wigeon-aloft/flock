@@ -232,8 +232,12 @@ class FlockClient(discord.Client):
             name = args[0]
 
         # Create the queue
-        q = self._queue_manager.create_queue(author=message.author, name=name)
-        await message.channel.send(self._commands['create']['response'].format(q.get_name()))
+        try:
+            q = self._queue_manager.create_queue(author=message.author, name=name)
+            await message.channel.send(self._commands['create']['response'].format(q.get_name()))
+        except ValueError as value_error:
+            print(value_error)
+            await message.channel.send(value_error)
 
     async def add(self, message, args):
             # Add a user to the specified queue
