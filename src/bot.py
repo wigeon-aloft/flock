@@ -22,7 +22,7 @@ class FlockClient(discord.Client):
         self._queue_manager = fu.QueueManager()
         self._commands = {
             "help": {
-                "method": None,
+                "method": self.help,
                 "trigger": [
                     "help",
                     "h"
@@ -159,6 +159,18 @@ class FlockClient(discord.Client):
             await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
                 user_command, '\n- '.join(self._commands.keys())))
             
+    async def help(self, message, args):
+        """Prints help information for the given command or shows a list of commands if command not provided."""
+
+        try:
+            command = self.get_command_from_trigger(args[0])
+            await message.channel.send(f"{command} - {command.get('description')}")
+
+        except KeyError:
+            # Command doesn't exist - show a general list of commands and associated triggers
+            command_help_string = '\n'.join([f"{command.key()} - {command.get('description')}" for command in self._commands])
+            await message.channel.send(f"{args[0]} is not a valid command. Below is a list of available commands:\n{command_help_string}")
+    
     async def create(self, message, args):
         # Get the user-specified queue name, if provided
         name = ""
