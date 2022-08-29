@@ -23,11 +23,17 @@ class QueueManager:
         # Create the new queue and add to list
         if not self.check_queue_name_exists(qname):
             queue = Queue(creator=author.id, guild=author.guild, name=qname)
-            self._queues.append(queue)
-            return queue
 
+            # Add queue creator to queue
+            queue.add_member(author.id)
+
+            # Add queue to queue list
+            self._queues.append(queue)
+
+            return queue
+        
         # Raise value error if there's already a queue with that name
-        raise ValueError("Queue with that name already exists.")           
+        raise ValueError("Queue with that name already exists.")
 
     def get_queues(self):
         return self._queues
