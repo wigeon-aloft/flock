@@ -22,6 +22,7 @@ class FlockClient(discord.Client):
         self._queue_manager = fu.QueueManager()
         self._commands = {
             "help": {
+                "name": "help",
                 "method": self.help,
                 "trigger": [
                     "help",
@@ -31,6 +32,7 @@ class FlockClient(discord.Client):
                 "description": ""
             },
             "add": {
+                "name": "add",
                 "method": self.add,
                 "trigger": [
                     "join",
@@ -42,6 +44,7 @@ class FlockClient(discord.Client):
                 "description": "Add a user to an existing queue."
             },
             "create": {
+                "name": "create",
                 "method": self.create,
                 "trigger": [
                     "create",
@@ -51,6 +54,7 @@ class FlockClient(discord.Client):
                 "description": "Creates a new queue."
             },
             "show": {
+                "name": "show",
                 "method": self.show,
                 "trigger": [
                     "show",
@@ -60,6 +64,7 @@ class FlockClient(discord.Client):
                 "description": "Lists the queues the user is current in."
             },
             "leave": {
+                "name": "leave",
                 "method": self.leave,
                 "trigger": [
                     "leave",
@@ -71,6 +76,7 @@ class FlockClient(discord.Client):
                 "description": "Removes a user from a queue."
             },
             "status": {
+                "name": "status",
                 "method": self.status,
                 "trigger": [
                     "status",
@@ -80,6 +86,7 @@ class FlockClient(discord.Client):
                 "description": "Shows the current members of a queue."
             },
             "delete": {
+                "name": "delete",
                 "method": self.delete,
                 "trigger": [
                     "delete",
@@ -120,7 +127,7 @@ class FlockClient(discord.Client):
         # Check if the trigger is associated with a command
         for command in self._commands:
             if user_command in self._commands.get(command).get("trigger"):
-                return self._commands.get(command).get("method")
+                return self._commands.get(command)
             
         # Raise an exception if the trigger could not be found
         raise KeyError(f"Command '{user_command}' does not exist.")
@@ -153,7 +160,7 @@ class FlockClient(discord.Client):
 
         # Run the command associated with user_command
         try:
-            await self.get_command_from_trigger(user_command)(message, args)
+            await self.get_command_from_trigger(user_command).get("method")(message, args)
         except KeyError as ke:
             print(ke)
             await message.channel.send("`{}` not recognised as a command. Use `help` for a list of available commands.".format(
