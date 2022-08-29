@@ -22,7 +22,13 @@ class QueueManager:
         
         # Create the new queue and add to list
         queue = Queue(creator=author.id, guild=author.guild, name=qname)
+        
+        # Add queue creator to queue
+        queue.add_member(author.id)
+
+        # Add queue to queue list
         self._queues.append(queue)
+        
         return queue
 
     def get_queues(self):
